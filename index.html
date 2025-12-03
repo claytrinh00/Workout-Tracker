@@ -376,18 +376,19 @@
             const urlParams = new URLSearchParams(window.location.search);
             const programId = urlParams.get('program') || 'default';
             
-            if (!programData[programId]) {
-                 document.getElementById('loading-message').innerText = `Error: Program ID "${programId}" not found. Loading default plan.`;
-                 currentProgramId = 'default';
-            } else {
+            // --- FIX: Ensure dynamic style is applied immediately for theme consistency ---
+            if (programData[programId]) {
+                 applyProgramTheme(programData[programId]);
                  currentProgramId = programId;
                  document.getElementById('loading-message').classList.add('hidden');
+            } else {
+                 applyProgramTheme(programData['default']);
+                 currentProgramId = 'default';
+                 document.getElementById('loading-message').innerText = `Error: Program ID "${programId}" not found. Loading default plan.`;
             }
+            // --------------------------------------------------------------------------
 
-            // 2. Apply Program Theme and Title
-            applyProgramTheme(programData[currentProgramId]);
-
-            // 3. Render Day Selectors and initial day
+            // 2. Render Day Selectors and initial day
             renderDaySelectors(programData[currentProgramId].workouts);
             
             const initialDay = sessionStorage.getItem(`currentDayId_${currentProgramId}`) || Object.keys(programData[currentProgramId].workouts)[0];
